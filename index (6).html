@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator ni James</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      width: 320px;
+      max-width: 90%;
+    }
+
+    #display {
+      width: 100%;
+      height: 70px;
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      font-size: 1.4em;
+      border: none;
+      border-radius: 8px;
+      box-sizing: border-box;
+      background: #222;
+      color: #1ed760;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    #lyricSpan {
+      width: 100%;
+      word-wrap: break-word;
+      white-space: normal;
+      line-height: 1.2em;
+      text-align: right;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 18px;
+      font-size: 1.3em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #f1f1f1;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn.operator {
+      background: #f7941d;
+      color: #fff;
+    }
+
+    .btn.clear {
+      background: #e74c3c;
+      color: #fff;
+    }
+
+    .btn.equals {
+      background: #2ecc71;
+      color: #fff;
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div id="display">
+      <span id="lyricSpan"></span>
+    </div>
+
+    <div class="buttons">
+      <button class="btn clear">C</button>
+      <button class="btn">(</button>
+      <button class="btn">)</button>
+      <button class="btn operator">/</button>
+      <button class="btn">7</button>
+      <button class="btn">8</button>
+      <button class="btn">9</button>
+      <button class="btn operator">*</button>
+      <button class="btn">4</button>
+      <button class="btn">5</button>
+      <button class="btn">6</button>
+      <button class="btn operator">-</button>
+      <button class="btn">1</button>
+      <button class="btn">2</button>
+      <button class="btn">3</button>
+      <button class="btn operator">+</button>
+      <button class="btn">0</button>
+      <button class="btn">.</button>
+      <button class="btn operator">%</button>
+      <button class="btn equals">=</button>
+    </div>
+  </div>
+
+  <!-- 🎵 Add your audio file here -->
+  <audio id="song" src="snaptik_7519365588892830982_v2_20250922_180458.mp3"></audio>
+
+  <script>
+    const lyricSpan = document.getElementById("lyricSpan");
+    const buttons = document.querySelectorAll(".btn");
+    const song = document.getElementById("song");
+
+    const lyrics = [
+      { text: "Hindi na makalaya", delay: 4300 },
+      { text: "Dinadalaw mo 'ko bawat gabi", delay: 4500 },
+      { text: "Wala mang nakikita", delay: 4700 },
+      { text: "Haplos mo'y ramdam pa rin sa dilim", delay: 4700 },
+      { text: "Hindi na nananaginip", delay: 4800 },
+      { text: "Hindi na ma-makagising", delay: 4800 },
+      { text: "Pasindi na ng ilaw", delay: 4800 },
+      { text: "Minumulto na 'ko ng damdamin ko", delay: 5000 },
+      { text: "'Di mo ba ako lisanin?", delay: 4800 },
+      { text: "Hindi pa ba sapat pagpapahirap sa 'kin?", delay: 4900 },
+      { text: "Hindi na ba ma-mamamayapa?", delay: 5000 },
+      { text: "Hindi na ba ma-mamamayapa?", delay: 5000 }
+    ];
+
+    let lyricIndex = 0;
+    let isLyricMode = false;
+    let timerId = null;
+
+    function showNextLyric() {
+      if (lyricIndex < lyrics.length) {
+        const { text, delay } = lyrics[lyricIndex];
+        lyricSpan.textContent = text;
+        lyricSpan.style.color = "#fff";
+        lyricSpan.style.textAlign = "center";
+        lyricIndex++;
+        timerId = setTimeout(showNextLyric, delay);
+      } else {
+        setTimeout(resetCalculator, 2000);
+      }
+    }
+
+    function resetCalculator() {
+      clearTimeout(timerId);
+      lyricSpan.textContent = "";
+      lyricSpan.style.color = "#1ed760";
+      lyricSpan.style.textAlign = "right";
+      lyricIndex = 0;
+      isLyricMode = false;
+
+      // stop and reset audio
+      song.pause();
+      song.currentTime = 0;
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        const buttonText = button.textContent;
+
+        if (button.classList.contains("equals")) {
+          if (!isLyricMode) {
+            isLyricMode = true;
+            showNextLyric();
+            song.play(); // 🔊 start song when lyrics begin
+          }
+        } else if (button.classList.contains("clear")) {
+          resetCalculator();
+        } else {
+          if (isLyricMode) {
+            resetCalculator();
+            lyricSpan.textContent = buttonText;
+          } else {
+            lyricSpan.textContent += buttonText;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
